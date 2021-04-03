@@ -1,29 +1,64 @@
-ul{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-ul li{
-    list-style-type: none;
+body{
+    font-family: Gill Sans, sans-serif;
 }
 
-table{
+.title{
+    background-color: rgb(228, 242, 255);
+    height: 60px;
+}
+.title th{
+    padding: 20px 0 0 20px;
+}
+thead{
     width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
+.title a{
+    text-decoration: none;
+    font-size: 14px;
+    color:#000;
+    padding-bottom: 18px;
+}
+.title a:hover{
+    color:#5e89da;
+    border-bottom: 3px solid #5e89da;
+}
+
+.date{
+    display: flex;
+    justify-content: flex-end;
+}
+
+tbody tr{
+    width: 100%;
+    display: flex;
+}
+
+tbody tr td{
+    width: 50%;
+}
 .disabled{
     display: none;
 }
-.active{
-    display: block;
-}
-.search {
-    
+
+input {
     background-position: 10px 12px;
     background-repeat: no-repeat;
-    width: 100%;
+    width: 346px;
     font-size: 16px;
     padding: 12px 20px 12px 40px;
     border: 1px solid #ddd;
-    margin-bottom: 12px;
+    margin: 20px 0;
+    box-shadow: 10px 3px 8px #dfdddd;
+    outline: none;     
+}
+
+input::placeholder {
+    color: #dfdddd;;
   }
+.main-content tr td{
+    padding: 10px;
+    border-bottom: 0.5px solid #ddd;
+}

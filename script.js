@@ -36,13 +36,13 @@ filteredMonths.forEach(e => {
         /*Если имя объекта из number_list не совпадает с внутренним полем number объекта,
          то удаляем объект из number_list и переходим к следующему объекту */
         if(number !== objectFromList.number){
-            delete e.number_list[number];
+            with(e){delete e.number_list[number]};
             continue;
         }
         /*Если alias не совпадает с number_alias объекта из number_list,
          то удаляем объект из number_list и переходим к следующему объекту */
         if(objectFromList.number_alias !== e.alias){
-            delete objectFromList;
+            with(e){delete e.number_list[number]};
             continue;
         }
         /*Если объект из number_list за пределами месяца,
@@ -51,31 +51,52 @@ filteredMonths.forEach(e => {
         const endDate = new Date(e.date_to);
         const numberDate = new Date(objectFromList.cdate);
         if(!(numberDate >= startDate && numberDate <= endDate)){
-            objectFromList;
+            with(e){delete e.number_list[number]};
         }
     }
 });
 
-const root = document.getElementById('root');
-const title = document.createElement('ul');
+//создаем таблицу
+const table = document.createElement('table');
+table.classList.add('root');
+
+//создаем хедер таблицы и добавляем в него ряд для месяцев
+const tableHead = document.createElement('thead');
+const headRow = document.createElement('tr');
+headRow.classList.add('head');
+headRow.classList.add('title');
+tableHead.append(headRow);
+
+//создаем строку поиска
+const headSearch = document.createElement('tr');
+headSearch.classList.add('head');
+headSearch.classList.add('search');
+const tbForInput = document.createElement('td');
+const searchInput = document.createElement('input');
+searchInput.type = 'text';
+searchInput.placeholder= "Search";
+searchInput.setAttribute('onkeyup', 'search()');
+
+//добавляем ее в хедер таблицы
+tbForInput.append(searchInput);
+headSearch.append(tbForInput);
+tableHead.append(headSearch);
+table.append(tableHead);
+
+//создаем и добавляем тело таблицы
+const tableBody = document.createElement('tbody');
+tableBody.classList.add('main-content');
+table.append(tableBody);
+
+//добавляем таблицу на страницу
+document.body.append(table);
 
 //создаем ссылки с полным названием месяца и годом
 let monthTitles = filteredMonths.map((e)=> 
-    `<li><a class =\'${e.alias}\' href=\'#\'> ${months.get(e.alias)}<sup>${year}</sup></a></li>`
+    `<th><a class =\'${e.alias}\' href=\'#\'> ${months.get(e.alias)}<sup>${year}</sup></a></th>`
 ).join('');
 //добавляем их на страницу
-title.innerHTML = monthTitles;
-root.append(title);
-
-//добавляем строку поиска на страницу
-const input = document.createElement('input');
-input.classList.add('search');
-//добавляем eventListner на нажатие клавиши
-input.setAttribute('onkeyup', 'search()');
-root.append(input);
-
-
-const table = document.createElement('table');
+headRow.innerHTML = monthTitles;
 
 //создаем таблицу с номерами и датами
 const tableContent = filteredMonths.map((e) => {
@@ -83,35 +104,33 @@ const tableContent = filteredMonths.map((e) => {
     for(let number in e.number_list){
         const numberDate = new Date(e.number_list[number].cdate).toLocaleDateString();
         //т.к. выше мы проверили совпадение имени объекта и его поля number, можем добавлять имя объекта
-        res += `<tr class = \'${e.alias}\ disabled'><td> ${number}</td> <td> ${numberDate}</td></tr>`;
+        res += `<tr class = \'${e.alias}\ disabled'><td class='number'> ${number}</td> <td class='date'> ${numberDate}</td></tr>`;
     }
         return res;
 }).join('');
-//добавляем таблицу на страницу
-table.innerHTML = tableContent;
-root.append(table);
-
+//добавляем их на страницу
+tableBody.innerHTML = tableContent;
 
 //по нажатию на ссылку с названием месяца на страницу появляются соответствующие месяцу номера
 [].forEach.call(document.getElementsByTagName('a'), function(el){
-el.addEventListener('click', function(e){
-    const rows = document.querySelectorAll('tr');
-    rows.forEach(row => {
-        if(row.classList.contains(e.currentTarget.className) && row.classList.contains('disabled')){
-            row.classList.remove('disabled');
-        }else if(!row.classList.contains(e.currentTarget.className) && !row.classList.contains('disabled')){
-            row.classList.add('disabled');
-        }
+    el.addEventListener('click', function(e){
+        const rows = Array.from(document.querySelectorAll('tr'));
+        rows.filter(e=>!e.classList.contains('head')).forEach(row => {
+            if(row.classList.contains(e.currentTarget.className) && row.classList.contains('disabled')){
+                row.classList.remove('disabled');
+            }else if(!row.classList.contains(e.currentTarget.className) && !row.classList.contains('disabled')){
+                row.classList.add('disabled');
+            }
+        });
+        console.log(e);
     });
-    console.log(e);
-});
-});
+    });
 
 //осуществялем поиск по вхождению подстроки
 function search() {
-    let input = document.getElementsByClassName('search'),
+    let input = document.getElementsByTagName('input');
         inputText = input[0].value.toString();
-        rows = document.getElementsByTagName('tr');
+        rows = Array.from(document.getElementsByTagName('tr')).filter(e=>!e.classList.contains('head'));
         for(let element of rows){
             let rowContent = element.getElementsByTagName('td')[0];
             let txtContent = rowContent.textContent || rowContent.innerText;
@@ -122,12 +141,3 @@ function search() {
             }
         }  
 }
-
-
-
-
-
-
-
-
-
