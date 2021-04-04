@@ -122,7 +122,6 @@ tableBody.innerHTML = tableContent;
                 row.classList.add('disabled');
             }
         });
-        console.log(e);
     });
     });
 
